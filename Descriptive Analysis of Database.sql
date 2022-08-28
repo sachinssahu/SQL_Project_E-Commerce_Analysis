@@ -1,5 +1,159 @@
 USE Ecomm_schema;
 
+/******************************************************************************************************************/
+--- Basic KPIs ---
+/******************************************************************************************************************/
+
+
+--- Realated to Orders ---
+
+--- Minimum Order Value
+--------------------------------------------------------------------------------------------------------------------
+SELECT ROUND(MIN(Total_order_amount), 2) FROM Orders;
+
+--- Maximum Order Value
+--------------------------------------------------------------------------------------------------------------------
+SELECT ROUND(MAX(Total_order_amount), 2) FROM Orders;
+
+--- Total Revenue Generated
+--------------------------------------------------------------------------------------------------------------------
+SELECT ROUND(SUM(Total_order_amount), 2) FROM Orders;
+
+--- Average Order Value
+--------------------------------------------------------------------------------------------------------------------
+SELECT ROUND(AVG(Total_order_amount), 2) FROM Orders;
+
+--- Orders are from DATES as follows
+--------------------------------------------------------------------------------------------------------------------
+SELECT MIN(OrderDate), MAX(OrderDate) FROM Orders;
+
+--- Count of Customers who Ordered
+--------------------------------------------------------------------------------------------------------------------
+SELECT COUNT(DISTINCT(CustomerID)) FROM Orders;
+
+--- Payment method used for Orders are as follows:
+--------------------------------------------------------------------------------------------------------------------
+SELECT DISTINCT(A.PaymentID), B.PaymentType FROM Orders A
+INNER JOIN Payments B ON A.PaymentID = B.PaymentID
+WHERE B.Allowed = 1;
+
+--- Returning Customers
+--------------------------------------------------------------------------------------------------------------------
+SELECT A.CustomerID, B.FirstName, B.LastName, B.Country, COUNT(A.CustomerID) AS Nos_Orders
+FROM Orders A INNER JOIN Customers B ON A.CustomerID = B.CustomerID 
+GROUP BY A.CustomerID, B.FirstName, B.LastName, B.Country
+HAVING COUNT(A.CustomerID) > 1;
+
+--- Non-Returning Customers
+--------------------------------------------------------------------------------------------------------------------
+SELECT A.CustomerID, B.FirstName, B.LastName, B.Country, COUNT(A.CustomerID) AS Nos_Orders
+FROM Orders A INNER JOIN Customers B ON A.CustomerID = B.CustomerID 
+GROUP BY A.CustomerID, B.FirstName, B.LastName, B.Country
+HAVING COUNT(A.CustomerID) = 1;
+
+--- Shippers Associated with the orders
+--------------------------------------------------------------------------------------------------------------------
+SELECT DISTINCT(A.ShipperID ), B.CompanyName, B.Phone
+FROM Orders A INNER JOIN Shippers B ON A.ShipperID = B.ShipperID
+
+--- Shipper with along the numbers of Orders they have shipped
+--------------------------------------------------------------------------------------------------------------------
+SELECT A.ShipperID, B.CompanyName, COUNT(A.OrderID) AS Nos_Orders_Shipped
+FROM Orders A INNER JOIN Shippers B ON A.ShipperID = B.ShipperID
+GROUP BY A.ShipperID, B.CompanyName
+ORDER BY Nos_Orders_Shipped DESC;
+
+--- Day on which we have received most numbers of orders
+--------------------------------------------------------------------------------------------------------------------
+SELECT OrderDate, COUNT(OrderID) AS Nos_Orders_Received FROM Orders
+GROUP BY OrderDate
+ORDER BY Nos_Orders_Received DESC;
+
+--- Day on which we have delivered maximum numbers of orders
+--------------------------------------------------------------------------------------------------------------------
+SELECT DeliveryDate, COUNT(OrderID) AS Nos_Orders_Received FROM Orders
+GROUP BY DeliveryDate
+ORDER BY Nos_Orders_Received DESC;
+
+
+--- Day on which we have shipped maximum numbers of orders
+--------------------------------------------------------------------------------------------------------------------
+SELECT ShipDate, COUNT(OrderID) AS Nos_Orders_Received FROM Orders
+GROUP BY ShipDate
+ORDER BY Nos_Orders_Received DESC;
+
+--- Day on which we have generated maximum revenue
+--------------------------------------------------------------------------------------------------------------------
+SELECT TOP 1 OrderDate, COUNT(OrderID) AS Nos_Orders_Received, ROUND(SUM(Total_order_amount), 2) AS Revenue
+FROM Orders
+GROUP BY OrderDate
+ORDER BY Revenue DESC;
+
+--- Day on which we have generated minimum revenue
+--------------------------------------------------------------------------------------------------------------------
+SELECT TOP 1 OrderDate, COUNT(OrderID) AS Nos_Orders_Received, ROUND(SUM(Total_order_amount), 2) AS Revenue
+FROM Orders
+GROUP BY OrderDate
+ORDER BY Revenue;
+
+--- RELATED TO CUSTOMERS ---
+
+--- Total numbers of customers connnected with us
+--------------------------------------------------------------------------------------------------------------------
+SELECT COUNT(DISTINCT(CustomerID)) AS Total_Customers FROM Customers;
+
+--- Customer base by country
+--------------------------------------------------------------------------------------------------------------------
+SELECT Country,COUNT(CustomerID) AS Total_Customers
+FROM Customers GROUP BY Country
+ORDER BY Total_Customers DESC;
+
+--- Number of cutomers eneterd by date
+--------------------------------------------------------------------------------------------------------------------
+SELECT DateEntered, COUNT(CustomerID) AS Cust_Connected
+FROM Customers
+GROUP BY DateEntered ORDER BY Cust_Connected DESC;
+
+--- Number of cutomers by postalcode where number of customers is more than 5
+--------------------------------------------------------------------------------------------------------------------
+SELECT PostalCode, COUNT(CustomerID) AS Nos_Cust
+FROM Customers
+GROUP BY PostalCode HAVING COUNT(CustomerID) > 5
+ORDER BY Nos_Cust DESC;
+
+--- REALTED TO PRODUCTS ---
+
+--- Number of products under each category
+--------------------------------------------------------------------------------------------------------------------
+SELECT Category_ID, COUNT(ProductID) AS Nos_Products
+FROM Products GROUP BY Category_ID
+ORDER BY Nos_Products DESC;
+
+
+--- PRODUCT WITH MORE THAN 3 RATING
+--------------------------------------------------------------------------------------------------------------------
+SELECT ProductID, Product, Rating FROM Products
+WHERE Rating IS NOT NULL AND Rating > 3
+ORDER BY Rating DESC;
+
+--- NUMBER OF PRODUCTS WITH LESS THAN 2.1 RATING
+--------------------------------------------------------------------------------------------------------------------
+SELECT Rating, COUNT(*) AS Nos_Low_Ratng FROM Products
+WHERE Rating IS NOT NULL AND Rating < 2.1
+GROUP BY Rating;
+
+--- NUMBER OF PRODUCTS WITH NO RATING
+--------------------------------------------------------------------------------------------------------------------
+SELECT COUNT(*) AS NOT_RATED FROM Products
+WHERE Rating IS NULL
+GROUP BY Rating;
+--------------------------------------------------------------------------------------------------------------------
+
+
+/******************************************************************************************************************/
+--- BUSINESS REALATED KPIs
+/******************************************************************************************************************/
+
 --- Identifying the distinct orders for which the PaymentID is “2”
 --------------------------------------------------------------------------------------------------------------------
 SELECT DISTINCT(OrderID),* FROM Orders WHERE PaymentID = 2;
