@@ -13,4 +13,4 @@ Performed Descriptive Analysis on the Database inclding basic KPIs and BI Proble
 Advance SQL Concepts are used such as Union, Joins, Window Functions, CTEs, Views, Aggregate Funictions and Nested Queries.
 
 Note: Cleaned Dataset was inserted as flat file
-      In some cases BI Problems statements can be give irrlevant output as it was designed to showcase SQL proficiencey only
+Note: In some cases BI Problems statements can be give irrlevant output as it was designed to showcase SQL proficiencey only
